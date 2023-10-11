@@ -5,9 +5,13 @@ import {faChevronRight} from '@fortawesome/free-solid-svg-icons';
 
 import {appColors} from '../../theme';
 
-export const ChatItem = () => {
+interface Props {
+  onChatPress: () => void;
+}
+
+export const ChatItem = ({onChatPress}: Props) => {
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onChatPress}>
       <View style={styles.avatarContainer}>
         <Text>TN</Text>
       </View>

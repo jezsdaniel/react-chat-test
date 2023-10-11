@@ -6,11 +6,15 @@ import {appColors} from '../../theme';
 
 const Separator = () => <View style={styles.separator} />;
 
-export const ChatList = () => {
+interface Props {
+  onChatPress: () => void;
+}
+
+export const ChatList = ({onChatPress}: Props) => {
   return (
     <FlatList
       data={[1, 2, 3, 4, 5, 6, 7, 8]}
-      renderItem={() => <ChatItem />}
+      renderItem={() => <ChatItem onChatPress={onChatPress} />}
       keyExtractor={item => item.toString()}
       ItemSeparatorComponent={Separator}
       style={styles.list}

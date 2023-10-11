@@ -1,14 +1,19 @@
 import React from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
 
-import {TopBar} from './top-bar';
 import {ChatList} from './chat-list';
+import {HomeScreenProps} from '../../types/types';
 
-export function HomeScreen() {
+export function HomeScreen({navigation}: HomeScreenProps) {
+  const handleChatPress = () => {
+    navigation.navigate('Chat', {
+      contactName: 'Juan Perez',
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <TopBar />
-      <ChatList />
+      <ChatList onChatPress={handleChatPress} />
     </SafeAreaView>
   );
 }
