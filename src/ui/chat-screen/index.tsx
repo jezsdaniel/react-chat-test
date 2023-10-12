@@ -1,32 +1,38 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {GiftedChat, IMessage} from 'react-native-gifted-chat';
 
 import {appColors} from '../../theme';
+import {ChatScreenProps} from '../../types/types';
+import {useAppDispatch, useAppSelector} from '../../store/hooks';
+import {addMessages} from '../../store/app-slice';
 
-export function ChatScreen() {
-  const [messages, setMessages] = useState<IMessage[]>([]);
+export function ChatScreen({route: {params}}: ChatScreenProps) {
+  const chats = useAppSelector(state => state.app.chats);
+  const dispatch = useAppDispatch();
+
+  const [messages, setMessages] = useState<IMessage[]>(
+    chats.find(chat => chat.user._id === params.user.id)?.messages ?? [],
+  );
 
   useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: 'Hello developer',
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: 'React Native',
-          avatar: 'https://placeimg.com/140/140/any',
-        },
-      },
-    ]);
-  }, []);
+    const chat = chats.find(c => c.user._id === params.user.id);
+    if (chat) {
+      setMessages(chat.messages);
+    }
+  }, [chats, params.user.id]);
 
-  const onSend = useCallback((messages: IMessage[] = []) => {
-    setMessages(previousMessages =>
-      GiftedChat.append(previousMessages, messages),
-    );
-  }, []);
+  const onSend = useCallback(
+    (m: IMessage[] = []) => {
+      dispatch(
+        addMessages({
+          userId: params.user.id,
+          newMessages: m,
+        }),
+      );
+    },
+    [dispatch, params.user.id],
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -36,8 +42,8 @@ export function ChatScreen() {
             <Text>{props.currentMessage?.user.name?.at(0)}</Text>
           </View>
         )}
-        messages={messages}
-        onSend={messages => onSend(messages)}
+        messages={[...messages].reverse()}
+        onSend={m => onSend(m)}
         user={{
           _id: 1,
         }}
